@@ -55,7 +55,8 @@ class Day2NightDataset(Pix2pixDataset):
             'instance': 0,
             'image': image_tensor,
             'path': image_path,
-            'cpath': label_path
+            'cpath': label_path,
+            'spath': image_path
         }
 
         self.postprocess(input_dict)
