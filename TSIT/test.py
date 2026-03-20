@@ -25,7 +25,6 @@ webpage = html.HTML(web_dir,
                     'Experiment = %s, Phase = %s, Epoch = %s' %
                     (opt.name, opt.phase, opt.which_epoch))
 
-# test
 print('Number of images: ', len(dataloader))
 for i, data_i in enumerate(tqdm(dataloader)):
     if i * opt.batchSize >= opt.how_many:
@@ -33,9 +32,14 @@ for i, data_i in enumerate(tqdm(dataloader)):
 
     generated = model(data_i, mode='inference')
 
-    img_path = data_i['cpath']
+    cpath = data_i['cpath']
+    spath = data_i['spath'] if 'spath' in data_i else data_i['path']
+
     for b in range(generated.shape[0]):
-        # print(i, 'process image... %s' % img_path[b])
+        cname = os.path.splitext(os.path.basename(cpath[b]))[0]
+        sname = os.path.splitext(os.path.basename(spath[b]))[0]
+        out_name = f"{cname}__{sname}"
+
         if opt.show_input:
             if opt.task == 'SIS':
                 visuals = OrderedDict([('input_label', data_i['label'][b]),
@@ -47,6 +51,7 @@ for i, data_i in enumerate(tqdm(dataloader)):
                                        ('synthesized_image', generated[b])])
         else:
             visuals = OrderedDict([('synthesized_image', generated[b])])
-        visualizer.save_images(webpage, visuals, img_path[b:b + 1])
+
+        visualizer.save_images(webpage, visuals, [out_name])
 
 webpage.save()
