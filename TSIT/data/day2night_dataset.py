@@ -21,43 +21,14 @@ class Day2NightDataset(Pix2pixDataset):
     def get_paths(self, opt):
         content_paths = sorted(make_dataset(opt.croot))
         style_paths = sorted(make_dataset(opt.sroot))
-        instance_paths = []
-
-        expanded_content = []
-        expanded_style = []
+        pairs = []
         for c in content_paths:
             for s in style_paths:
-                expanded_content.append(c)
-                expanded_style.append(s)
-
-        return expanded_content, expanded_style, instance_paths
+                pairs.append((c, s))
+        label_paths = [p[0] for p in pairs]
+        image_paths = [p[1] for p in pairs]
+        instance_paths = []
+        return label_paths, image_paths, instance_paths
 
     def paths_match(self, path1, path2):
         return True
-
-    def __getitem__(self, index):
-        from data.base_dataset import get_params, get_transform
-        from PIL import Image
-
-        label_path = self.label_paths[index]
-        label = Image.open(label_path).convert('RGB')
-        params = get_params(self.opt, label.size)
-        transform_label = get_transform(self.opt, params)
-        label_tensor = transform_label(label)
-
-        image_path = self.image_paths[index]
-        image = Image.open(image_path).convert('RGB')
-        transform_image = get_transform(self.opt, params)
-        image_tensor = transform_image(image)
-
-        input_dict = {
-            'label': label_tensor,
-            'instance': 0,
-            'image': image_tensor,
-            'path': image_path,
-            'cpath': label_path,
-            'spath': image_path
-        }
-
-        self.postprocess(input_dict)
-        return input_dict
