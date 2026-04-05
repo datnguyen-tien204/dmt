@@ -14,8 +14,6 @@ class Pix2pixDataset(BaseDataset):
     def initialize(self, opt):
         self.opt = opt
         label_paths, image_paths, instance_paths = self.get_paths(opt)
-        util.natural_sort(label_paths)
-        util.natural_sort(image_paths)
         if not opt.no_instance:
             util.natural_sort(instance_paths)
         label_paths = label_paths[:opt.max_dataset_size]
@@ -82,8 +80,8 @@ class Pix2pixDataset(BaseDataset):
                       'instance': instance_tensor,
                       'image': image_tensor,
                       'path': image_path,
-                      'cpath': label_path
-                      }
+                      'cpath': label_path,
+                      'spath': image_path}
         self.postprocess(input_dict)
         return input_dict
 
